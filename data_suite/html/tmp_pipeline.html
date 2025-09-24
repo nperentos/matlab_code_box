@@ -1,0 +1,608 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>tmp_pipeline</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-06-20"><meta name="DC.source" content="tmp_pipeline.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">EXAMPLE PIPELINE</a></li><li><a href="#2">GET DATA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</a></li><li><a href="#3">VISUALISE PERIPHERAL CHANNELS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</a></li><li><a href="#4">LOCATION vs LICKING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</a></li><li><a href="#5">LICKING SPECTROGRAM %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</a></li><li><a href="#6">PUPIL SIZE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</a></li><li><a href="#7">WHISKER TRACKING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</a></li><li><a href="#8">SPECTROGRAMS FOR THETA, GAMMA, RIPPLES AND UNIVERSAL %%%%%%%%%%%%%%%%%%%</a></li><li><a href="#9">2D heat maps x-axis:position, y-axis:trials, color:(occupancy,theta power, speed, pupil size, pupil positionX, pupil positionY)</a></li><li><a href="#10">VAR - dont run</a></li><li><a href="#11">WRAP COLORMAP ON ITSELF</a></li></ul></div><h2 id="1">EXAMPLE PIPELINE</h2><pre class="codeinput"><span class="comment">% could get multiple folders from a text file for example</span>
+<span class="comment">% lets work with one folder for now</span>
+<span class="comment">% we are assuming that all folders of interest have already been processed</span>
+<span class="comment">% to generate lfp and dat files batchDataConversion.m and convertData.m</span>
+<span class="comment">% nothing is done on units for now</span>
+</pre><h2 id="2">GET DATA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</h2><pre class="codeinput">fldr = <span class="string">'NP3_2018-04-11_19-37-06'</span>;
+processedPath = getfullpath(fldr); <span class="comment">% folder to keep processed data figs etc</span>
+<span class="comment">% get all channels into workspace</span>
+[data,settings,tScale] = getLFP(fldr);
+<span class="keyword">if</span> size(data,1) &lt; 40
+    runCh = 35; lickCh = 36; carouselCh = 37; rewardCh = 38;
+<span class="keyword">else</span>
+    runCh = 67; lickCh = 68; carouselCh = 69; rewardCh = 70;
+<span class="keyword">end</span>
+
+<span class="comment">% get 30kHz data for analog channels since encoder pulses are missed from</span>
+<span class="comment">% the lfp-1jHz data</span>
+[data30k,settings30k,tScale30k] = getDAT(fldr,[runCh, lickCh, carouselCh, rewardCh]);
+
+rewards         = getRewards(data30k(4,:));         <span class="comment">% REWARD TIMEPOINTS - reward channel = 38</span>
+runSpeed        = getRunSpeed(data30k(1,:));        <span class="comment">% RUNNING SPEED</span>
+carouselSpeed   = getCarouselSpeed(data30k(3,:));   <span class="comment">% CAROUSEL SPEED</span>
+location        = getLocation(data30k(3,:),rewards);        <span class="comment">% CAROUSEL LOCATION</span>
+licks           = getLicks(data(lickCh,:));         <span class="comment">% LICKING AS A FUNCTION OF LOCATION</span>
+</pre><h2 id="3">VISUALISE PERIPHERAL CHANNELS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</h2><pre class="codeinput">ifPlot = 1;
+<span class="keyword">if</span> ifPlot
+    <span class="comment">% close all;</span>
+    figure; hold <span class="string">all</span>;
+    <span class="comment">% run and carousel speeds</span>
+    h(1) = subplot(211);
+    plot(tScale,runSpeed,<span class="string">'color'</span>,[0 .1 1]); hold <span class="string">on</span>; <span class="comment">%h(1) = gca;</span>
+    plot(tScale,carouselSpeed,<span class="string">'color'</span>,[0 1 .1]);
+    drawPatches(h(1), [tScale(rewards.soundIdx); tScale(rewards.consumeIdx(:,2))]');
+    Lh = findobj(gca,<span class="string">'Type'</span>,<span class="string">'line'</span>);
+    legend(Lh,{<span class="string">'carousel speed'</span>,<span class="string">'run speed'</span>}); ylabel(<span class="string">'speed (cm/s)'</span>);
+    xlabel(<span class="string">'time (s)'</span>);
+    <span class="comment">% licking and location</span>
+    h(2) = subplot(212);
+    plot(tScale,location,<span class="string">'color'</span>,<span class="string">'k'</span>); hold <span class="string">on</span>; <span class="comment">% plot([0 max(tScale)],[4096 4096],'k');</span>
+    plot(tScale,licks,<span class="string">'color'</span>,[1 0.1 1 0.5]);
+    drawPatches(h(2), [tScale(rewards.soundIdx); tScale(rewards.consumeIdx(:,2))]');
+    Lh = findobj(gca,<span class="string">'Type'</span>,<span class="string">'line'</span>);
+    legend(Lh,{<span class="string">'licking'</span>,<span class="string">'location'</span>});
+    linkaxes(h,<span class="string">'x'</span>);
+    xlim([0 300]);
+    set(gcf,<span class="string">'Position'</span>,[65 152 1920 1003]);
+    xlabel(<span class="string">'time (s)'</span>);
+<span class="keyword">end</span>
+</pre><img vspace="5" hspace="5" src="tmp_pipeline_01.png" alt=""> <h2 id="4">LOCATION vs LICKING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</h2><p>only first 300 seconds since rest is sleep or non task</p><pre class="codeinput">from = 1; to = find(tScale == 300);
+<span class="comment">% [N,LocEdges,LicEdges,binLoc,binLic] = histcounts2(location,zscore(licks)');</span>
+<span class="comment">% figure;imagesc(LocEdges,LicEdges,N',[0 500]);axis xy</span>
+locEdges = linspace(0,max(location(from:to)),20);
+positionInd = discretize(location(from:to),locEdges);
+mlr = accumarray(positionInd',licks(from:to),[numel(locEdges),1],@mean);
+slr = accumarray(positionInd',licks(from:to),[numel(locEdges),1],@std);
+mlr = (mlr-mean(mlr))./(max(mlr)-min(mlr));
+slr = (slr-mean(slr))./(max(slr)-min(slr));
+locEdgesScaled = 2*pi*((locEdges - min(locEdges))./(max(locEdges)-min(locEdges)));
+figure; shadedErrorBar(locEdgesScaled(1:end-1),   mlr(1:end-1),    slr(1:end-1)./sqrt(sum(rewards.soundIdx*0.001&lt;300)));
+xlabel(<span class="string">'position (radians)'</span>); ylabel(<span class="string">'licking (normalised amplitude)'</span>);
+</pre><img vspace="5" hspace="5" src="tmp_pipeline_02.png" alt=""> <h2 id="5">LICKING SPECTROGRAM %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</h2><pre class="codeinput">clear <span class="string">options</span>;
+options.defaults = <span class="string">'theta'</span>;
+out = specmt(data(lickCh,:),options);
+clear <span class="string">options</span>;
+options.mode = <span class="string">'spectrogram'</span>;
+options.events = tScale(rewards.soundIdx);
+options.eventscolor = <span class="string">'k'</span>;
+figure(<span class="string">'Name'</span>,<span class="string">'licking spectrogram - all'</span>);
+out1 = plot_spectra(out,1,options); hold <span class="string">on</span>;
+delete(colorbar); xlabel(<span class="string">'time (s)'</span>);ylabel(<span class="string">'frequency (Hz)'</span>);
+figure(<span class="string">'Name'</span>,<span class="string">'licking spectrogram - task'</span>);
+out1 = plot_spectra(out,1,options); hold <span class="string">on</span>;
+delete(colorbar); xlabel(<span class="string">'time (s)'</span>);ylabel(<span class="string">'frequency (Hz)'</span>); xlim([0 300]);
+</pre><img vspace="5" hspace="5" src="tmp_pipeline_03.png" alt=""> <img vspace="5" hspace="5" src="tmp_pipeline_04.png" alt=""> <h2 id="6">PUPIL SIZE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</h2><p>run pupil summary which will return nan if if finds no processed data is found. If not found then you must manually run the pupil detection functions</p><pre class="codeinput">pupilH = pupilSummary(fldr);
+<span class="keyword">if</span> exist(<span class="string">'pupilH'</span>,<span class="string">'var'</span>)
+    load([processedPath,<span class="string">'pupilresults.mat'</span>]);
+<span class="keyword">end</span>
+set(gcf,<span class="string">'pos'</span>,[1 64 957 1117]);
+frameTimes = linspace(tScale(1),tScale(end),numel(frameTimes));
+</pre><img vspace="5" hspace="5" src="tmp_pipeline_05.png" alt=""> <h2 id="7">WHISKER TRACKING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</h2><p>not done prob won't bother with this</p><h2 id="8">SPECTROGRAMS FOR THETA, GAMMA, RIPPLES AND UNIVERSAL %%%%%%%%%%%%%%%%%%%</h2><p>general spectrograms for inspection theta_w=2s, gamma_w = 0.1s, ripple_w = 0.1, univresal_w = 2.5s</p><pre class="codeinput">ifRun = 0;
+<span class="keyword">if</span> ifRun
+    specgramTypes = {<span class="string">'theta'</span>;<span class="string">'gamma'</span>;<span class="string">'ripples'</span>;<span class="string">'universal'</span>};
+    [a,b] = numSubplots(size(data,1));
+    <span class="keyword">for</span> i=1:length(specgramTypes)
+        close <span class="string">all</span>; figure(1); figure(<span class="string">'Position'</span>,[-2632 40 2560 1287]);
+        <span class="keyword">for</span> ch = 1:size(data,1)
+            clear <span class="string">options</span>;
+            options.defaults = specgramTypes{i};
+            out = specmt(data(ch,:),options);
+            clear <span class="string">options</span>;
+            options.mode = <span class="string">'spectrogram'</span>;
+            options.events = tSound;
+            options.eventscolor = <span class="string">'k'</span>;
+            figure(1); clf;
+            out1 = plot_spectra(out,1,options);
+            delete(colorbar); xlabel(<span class="string">''</span>);ylabel(<span class="string">''</span>);
+            h = get(gcf,<span class="string">'Children'</span>);
+            figure(2);
+            ax = subplot(a(2),a(1),ch);
+            axD = get(ax,<span class="string">'Position'</span>);delete(ax);
+            tmph(ch) = copyobj(h,2);
+            set(tmph(ch),<span class="string">'Position'</span>,axD);
+            <span class="keyword">if</span> ch ~= 1; axis <span class="string">off</span>; <span class="keyword">end</span>
+        <span class="keyword">end</span>
+        figure(2);
+        print([processedPath,<span class="string">'session_spgram_'</span>,specgramTypes{i}],<span class="string">'-djpeg'</span>,<span class="string">'-r600'</span>);
+        close;
+        <span class="comment">% linkaxes(tmph,'x','y');</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><h2 id="9">2D heat maps x-axis:position, y-axis:trials, color:(occupancy,theta power, speed, pupil size, pupil positionX, pupil positionY)</h2><p>estimate location at the times of the spectrograms pick one lfp channel and work on that for theta power</p><pre class="codeinput">clear <span class="string">out</span>; clear <span class="string">options</span>; options.defaults = <span class="string">'theta'</span>;
+out = specmt(data(20,:),options);
+thetaP = mean(out.Sxy(:,(out.f&gt;5 &amp; out.f&lt;12)),2);
+thetaP = thetaP(out.t&lt;=300);
+
+locAtSpectrPoints = spline(tScale(tScale&lt;=300),location(tScale&lt;=300),out.t(out.t&lt;=300)); <span class="comment">% &lt;300 is task</span>
+positionInd = discretize(locAtSpectrPoints,locEdges);
+runSpeedAtSpectrPoints = spline(tScale(tScale&lt;=300),runSpeed(tScale&lt;=300),out.t(out.t&lt;=300));
+figure;
+mdl = fitlm(runSpeedAtSpectrPoints,normalize_array(thetaP));
+plot(mdl); axis <span class="string">tight</span>;
+xlabel(<span class="string">'speed (cm/s)'</span>); ylabel(<span class="string">'theta power (normalised)'</span>);
+
+<span class="comment">% location,trials and theta power 2d heat map</span>
+locEdges = linspace(0,max(locAtSpectrPoints),20);
+positionInd = discretize(locAtSpectrPoints,locEdges);
+tTmp = out.t(out.t&lt;=300);
+trialInd = discretize(tTmp,[-inf,tScale(rewards.soundIdx(tScale(rewards.soundIdx)&lt;=300)),inf]); <span class="comment">% index time variable according to trials</span>
+trialInd = trialInd(2:end-1);
+
+<span class="comment">%--------------------------------------------------------------------------</span>
+figure(<span class="string">'pos'</span>,[836 174 806 734]);
+<span class="comment">% theta power as a function of location and trial</span>
+subplot(321);
+clear <span class="string">lst</span> <span class="string">mlr</span> <span class="string">slr</span>;
+lst = unique(trialInd);
+<span class="keyword">for</span> i = 1:length(lst)-1
+    idx = find(trialInd == lst(i));
+    mlr(:,i) = accumarray(positionInd(idx),thetaP(idx),[numel(locEdges)-1,1],@mean);
+    <span class="comment">%slr(:,i) = accumarray(positionInd(idx),thetaP(idx),[numel(locEdges)-1,1],@std);</span>
+<span class="keyword">end</span>
+imagesc(locEdges',lst',mlr'); colorbar;
+axis <span class="string">xy</span>;xlabel(<span class="string">'position'</span>);ylabel(<span class="string">'trial'</span>);title(<span class="string">'theta power'</span>);
+
+<span class="comment">%--------------------------------------------------------------------------</span>
+<span class="comment">% speed as a function of location and trial</span>
+subplot(322);
+clear <span class="string">lst</span> <span class="string">mlr</span> <span class="string">slr</span>;
+lst = unique(trialInd);
+<span class="keyword">for</span> i = 1:length(lst)-1
+    idx = find(trialInd == lst(i));
+    mlr(:,i) = accumarray(positionInd(idx),runSpeedAtSpectrPoints(idx),[numel(locEdges)-1,1],@mean);
+    <span class="comment">%slr(:,i) = accumarray(positionInd(idx),runSpeedAtSpectrPoints(idx),[numel(locEdges)-1,1],@std);</span>
+<span class="keyword">end</span>
+imagesc(locEdges',lst',mlr'); colorbar;
+axis <span class="string">xy</span>;xlabel(<span class="string">'position'</span>);ylabel(<span class="string">'trial'</span>);title(<span class="string">'speed'</span>);
+
+<span class="comment">%--------------------------------------------------------------------------</span>
+<span class="comment">% occupancy as a function of location and trial</span>
+subplot(323);
+clear <span class="string">lst</span> <span class="string">mlr</span> <span class="string">slr</span>;
+lst = unique(trialInd);
+<span class="keyword">for</span> i = 1:length(lst)-1
+    idx = find(trialInd == lst(i));
+    mlr(:,i) = accumarray(positionInd(idx),positionInd(idx),[numel(locEdges)-1,1],@numel);
+    <span class="comment">%slr(:,i) = accumarray(positionInd(idx),runSpeedAtSpectrPoints(idx),[numel(locEdges)-1,1],@std);</span>
+<span class="keyword">end</span>
+imagesc(locEdges',lst',mlr'); colorbar;
+axis <span class="string">xy</span>;xlabel(<span class="string">'position'</span>);ylabel(<span class="string">'trial'</span>);title(<span class="string">'occupancy'</span>);
+
+<span class="comment">%--------------------------------------------------------------------------</span>
+<span class="comment">% pupil area as a function of location and trial</span>
+subplot(324);
+pupArea = [tracked.Area];
+idx = find(frameTimes&lt;=300);
+pupAtSpectrPoints = spline(frameTimes(idx),pupArea(idx),out.t(out.t&lt;=300)); <span class="comment">% &lt;300 is task</span>
+
+clear <span class="string">lst</span> <span class="string">mlr</span> <span class="string">slr</span>;
+lst = unique(trialInd);
+<span class="keyword">for</span> i = 1:length(lst)-1
+    idx = find(trialInd == lst(i));
+    mlr(:,i) = accumarray(positionInd(idx),pupAtSpectrPoints(idx),[numel(locEdges)-1,1],@mean);
+    <span class="comment">%slr(:,i) = accumarray(positionInd(idx),pupAtSpectrPoints(idx),[numel(locEdges)-1,1],@std);</span>
+<span class="keyword">end</span>
+imagesc(locEdges',lst',mlr'); colorbar;
+axis <span class="string">xy</span>;xlabel(<span class="string">'position'</span>);ylabel(<span class="string">'trial'</span>);title(<span class="string">'pupilArea'</span>);
+
+<span class="comment">%--------------------------------------------------------------------------</span>
+<span class="comment">% pupil center X</span>
+subplot(325);
+pupCentroid = [tracked.Centroid];
+pupCentroidX = pupCentroid(1:2:end); pupCentroidY = pupCentroid(2:2:end);
+pupCentroidX = pupCentroidX - mean(pupCentroidX);
+pupCentroidY = pupCentroidY - mean(pupCentroidY);
+idx = find(frameTimes&lt;=300);
+pupAtSpectrPoints = spline(frameTimes(idx),pupCentroidX(idx),out.t(out.t&lt;=300)); <span class="comment">% &lt;300 is task</span>
+
+clear <span class="string">lst</span> <span class="string">mlr</span> <span class="string">slr</span>;
+lst = unique(trialInd);
+<span class="keyword">for</span> i = 1:length(lst)-1
+    idx = find(trialInd == lst(i));
+    mlr(:,i) = accumarray(positionInd(idx),pupAtSpectrPoints(idx),[numel(locEdges)-1,1],@mean);
+    <span class="comment">%slr(:,i) = accumarray(positionInd(idx),pupAtSpectrPoints(idx),[numel(locEdges)-1,1],@std);</span>
+<span class="keyword">end</span>
+imagesc(locEdges',lst',mlr'); colorbar;
+axis <span class="string">xy</span>;xlabel(<span class="string">'position'</span>);ylabel(<span class="string">'trial'</span>);title(<span class="string">'pupilCenterX'</span>);
+
+<span class="comment">%--------------------------------------------------------------------------</span>
+<span class="comment">% pupil center X</span>
+subplot(326);
+pupCentroid = [tracked.Centroid];
+pupCentroidX = pupCentroid(1:2:end); pupCentroidY = pupCentroid(2:2:end);
+pupCentroidX = pupCentroidX - mean(pupCentroidX);
+pupCentroidY = pupCentroidY - mean(pupCentroidY);
+idx = find(frameTimes&lt;=300);
+pupAtSpectrPoints = spline(frameTimes(idx),pupCentroidY(idx),out.t(out.t&lt;=300)); <span class="comment">% &lt;300 is task</span>
+
+clear <span class="string">lst</span> <span class="string">mlr</span> <span class="string">slr</span>;
+lst = unique(trialInd);
+<span class="keyword">for</span> i = 1:length(lst)-1
+    idx = find(trialInd == lst(i));
+    mlr(:,i) = accumarray(positionInd(idx),pupAtSpectrPoints(idx),[numel(locEdges)-1,1],@mean);
+    <span class="comment">%slr(:,i) = accumarray(positionInd(idx),pupAtSpectrPoints(idx),[numel(locEdges)-1,1],@std);</span>
+<span class="keyword">end</span>
+imagesc(locEdges',lst',mlr'); colorbar;
+axis <span class="string">xy</span>;xlabel(<span class="string">'position'</span>);ylabel(<span class="string">'trial'</span>);title(<span class="string">'pupilArea'</span>);
+</pre><img vspace="5" hspace="5" src="tmp_pipeline_06.png" alt=""> <img vspace="5" hspace="5" src="tmp_pipeline_07.png" alt=""> <h2 id="10">VAR - dont run</h2><pre class="codeinput">ifdo = 0
+<span class="keyword">if</span> ifdo
+</pre><h2 id="11">WRAP COLORMAP ON ITSELF</h2><pre class="codeinput">jet_wrap = vertcat(jet,flipud(jet));
+colormap(jet_wrap);
+</pre><pre class="codeinput">figure(1)
+subplot(3,1,1); hold <span class="string">on</span>; cla
+plot(encoder)
+axis <span class="string">tight</span>
+
+plot(locs, pks, <span class="string">'r*'</span>)
+
+
+
+deltaTs = diff(locs);
+speed = 2*pi*Radius/600*100 ./ deltaTs ;  <span class="comment">% cm/s</span>
+
+
+figure
+subplot(221)
+hist(speed,50)
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><pre class="codeoutput">
+ifdo =
+
+     0
+
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% EXAMPLE PIPELINE
+
+% could get multiple folders from a text file for example
+% lets work with one folder for now
+% we are assuming that all folders of interest have already been processed
+% to generate lfp and dat files batchDataConversion.m and convertData.m
+% nothing is done on units for now
+
+%% GET DATA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+fldr = 'NP3_2018-04-11_19-37-06';
+processedPath = getfullpath(fldr); % folder to keep processed data figs etc
+% get all channels into workspace
+[data,settings,tScale] = getLFP(fldr);
+if size(data,1) < 40
+    runCh = 35; lickCh = 36; carouselCh = 37; rewardCh = 38;
+else
+    runCh = 67; lickCh = 68; carouselCh = 69; rewardCh = 70;
+end
+
+% get 30kHz data for analog channels since encoder pulses are missed from
+% the lfp-1jHz data
+[data30k,settings30k,tScale30k] = getDAT(fldr,[runCh, lickCh, carouselCh, rewardCh]);
+
+rewards         = getRewards(data30k(4,:));         % REWARD TIMEPOINTS - reward channel = 38
+runSpeed        = getRunSpeed(data30k(1,:));        % RUNNING SPEED
+carouselSpeed   = getCarouselSpeed(data30k(3,:));   % CAROUSEL SPEED 
+location        = getLocation(data30k(3,:),rewards);        % CAROUSEL LOCATION
+licks           = getLicks(data(lickCh,:));         % LICKING AS A FUNCTION OF LOCATION
+
+%% VISUALISE PERIPHERAL CHANNELS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ifPlot = 1;
+if ifPlot
+    % close all;
+    figure; hold all;
+    % run and carousel speeds
+    h(1) = subplot(211);
+    plot(tScale,runSpeed,'color',[0 .1 1]); hold on; %h(1) = gca;
+    plot(tScale,carouselSpeed,'color',[0 1 .1]);
+    drawPatches(h(1), [tScale(rewards.soundIdx); tScale(rewards.consumeIdx(:,2))]');
+    Lh = findobj(gca,'Type','line');
+    legend(Lh,{'carousel speed','run speed'}); ylabel('speed (cm/s)');
+    xlabel('time (s)');
+    % licking and location
+    h(2) = subplot(212);
+    plot(tScale,location,'color','k'); hold on; % plot([0 max(tScale)],[4096 4096],'k');
+    plot(tScale,licks,'color',[1 0.1 1 0.5]);
+    drawPatches(h(2), [tScale(rewards.soundIdx); tScale(rewards.consumeIdx(:,2))]');
+    Lh = findobj(gca,'Type','line');
+    legend(Lh,{'licking','location'});
+    linkaxes(h,'x');
+    xlim([0 300]);
+    set(gcf,'Position',[65 152 1920 1003]);
+    xlabel('time (s)');
+end
+
+%% LOCATION vs LICKING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% only first 300 seconds since rest is sleep or non task
+from = 1; to = find(tScale == 300);
+% [N,LocEdges,LicEdges,binLoc,binLic] = histcounts2(location,zscore(licks)');
+% figure;imagesc(LocEdges,LicEdges,N',[0 500]);axis xy
+locEdges = linspace(0,max(location(from:to)),20);
+positionInd = discretize(location(from:to),locEdges);
+mlr = accumarray(positionInd',licks(from:to),[numel(locEdges),1],@mean);
+slr = accumarray(positionInd',licks(from:to),[numel(locEdges),1],@std);
+mlr = (mlr-mean(mlr))./(max(mlr)-min(mlr));
+slr = (slr-mean(slr))./(max(slr)-min(slr));
+locEdgesScaled = 2*pi*((locEdges - min(locEdges))./(max(locEdges)-min(locEdges)));
+figure; shadedErrorBar(locEdgesScaled(1:end-1),   mlr(1:end-1),    slr(1:end-1)./sqrt(sum(rewards.soundIdx*0.001<300)));
+xlabel('position (radians)'); ylabel('licking (normalised amplitude)');
+
+%% LICKING SPECTROGRAM %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+clear options;
+options.defaults = 'theta';
+out = specmt(data(lickCh,:),options);
+clear options;
+options.mode = 'spectrogram';
+options.events = tScale(rewards.soundIdx);
+options.eventscolor = 'k';    
+figure('Name','licking spectrogram - all');
+out1 = plot_spectra(out,1,options); hold on;
+delete(colorbar); xlabel('time (s)');ylabel('frequency (Hz)');
+figure('Name','licking spectrogram - task');
+out1 = plot_spectra(out,1,options); hold on;
+delete(colorbar); xlabel('time (s)');ylabel('frequency (Hz)'); xlim([0 300]);
+
+%% PUPIL SIZE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% run pupil summary which will return nan if if finds no processed data is
+% found. If not found then you must manually run the pupil detection
+% functions
+pupilH = pupilSummary(fldr);
+if exist('pupilH','var')
+    load([processedPath,'pupilresults.mat']);
+end
+set(gcf,'pos',[1 64 957 1117]);
+frameTimes = linspace(tScale(1),tScale(end),numel(frameTimes));
+
+%% WHISKER TRACKING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% not done prob won't bother with this
+
+%% SPECTROGRAMS FOR THETA, GAMMA, RIPPLES AND UNIVERSAL %%%%%%%%%%%%%%%%%%%
+% general spectrograms for inspection
+% theta_w=2s, gamma_w = 0.1s, ripple_w = 0.1, univresal_w = 2.5s
+ifRun = 0;
+if ifRun
+    specgramTypes = {'theta';'gamma';'ripples';'universal'};
+    [a,b] = numSubplots(size(data,1));
+    for i=1:length(specgramTypes)
+        close all; figure(1); figure('Position',[-2632 40 2560 1287]);    
+        for ch = 1:size(data,1) 
+            clear options;
+            options.defaults = specgramTypes{i};
+            out = specmt(data(ch,:),options);
+            clear options;
+            options.mode = 'spectrogram';
+            options.events = tSound;
+            options.eventscolor = 'k';    
+            figure(1); clf;
+            out1 = plot_spectra(out,1,options);
+            delete(colorbar); xlabel('');ylabel('');
+            h = get(gcf,'Children');
+            figure(2);
+            ax = subplot(a(2),a(1),ch);
+            axD = get(ax,'Position');delete(ax);
+            tmph(ch) = copyobj(h,2);       
+            set(tmph(ch),'Position',axD);
+            if ch ~= 1; axis off; end         
+        end   
+        figure(2);
+        print([processedPath,'session_spgram_',specgramTypes{i}],'-djpeg','-r600');
+        close;
+        % linkaxes(tmph,'x','y');    
+    end
+end
+
+%% 2D heat maps x-axis:position, y-axis:trials, color:(occupancy,theta power, speed, pupil size, pupil positionX, pupil positionY)
+% estimate location at the times of the spectrograms
+% pick one lfp channel and work on that for theta power
+clear out; clear options; options.defaults = 'theta';
+out = specmt(data(20,:),options);
+thetaP = mean(out.Sxy(:,(out.f>5 & out.f<12)),2);
+thetaP = thetaP(out.t<=300);
+
+locAtSpectrPoints = spline(tScale(tScale<=300),location(tScale<=300),out.t(out.t<=300)); % <300 is task
+positionInd = discretize(locAtSpectrPoints,locEdges);
+runSpeedAtSpectrPoints = spline(tScale(tScale<=300),runSpeed(tScale<=300),out.t(out.t<=300)); 
+figure;
+mdl = fitlm(runSpeedAtSpectrPoints,normalize_array(thetaP));
+plot(mdl); axis tight;
+xlabel('speed (cm/s)'); ylabel('theta power (normalised)');
+
+% location,trials and theta power 2d heat map
+locEdges = linspace(0,max(locAtSpectrPoints),20);
+positionInd = discretize(locAtSpectrPoints,locEdges);
+tTmp = out.t(out.t<=300);
+trialInd = discretize(tTmp,[-inf,tScale(rewards.soundIdx(tScale(rewards.soundIdx)<=300)),inf]); % index time variable according to trials
+trialInd = trialInd(2:end-1);
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+figure('pos',[836 174 806 734]);
+% theta power as a function of location and trial
+subplot(321);
+clear lst mlr slr;
+lst = unique(trialInd);
+for i = 1:length(lst)-1
+    idx = find(trialInd == lst(i));
+    mlr(:,i) = accumarray(positionInd(idx),thetaP(idx),[numel(locEdges)-1,1],@mean);
+    %slr(:,i) = accumarray(positionInd(idx),thetaP(idx),[numel(locEdges)-1,1],@std);
+end
+imagesc(locEdges',lst',mlr'); colorbar;
+axis xy;xlabel('position');ylabel('trial');title('theta power');
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% speed as a function of location and trial
+subplot(322);
+clear lst mlr slr;
+lst = unique(trialInd);
+for i = 1:length(lst)-1
+    idx = find(trialInd == lst(i));
+    mlr(:,i) = accumarray(positionInd(idx),runSpeedAtSpectrPoints(idx),[numel(locEdges)-1,1],@mean);
+    %slr(:,i) = accumarray(positionInd(idx),runSpeedAtSpectrPoints(idx),[numel(locEdges)-1,1],@std);
+end
+imagesc(locEdges',lst',mlr'); colorbar;
+axis xy;xlabel('position');ylabel('trial');title('speed');
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% occupancy as a function of location and trial
+subplot(323);
+clear lst mlr slr;
+lst = unique(trialInd);
+for i = 1:length(lst)-1
+    idx = find(trialInd == lst(i));
+    mlr(:,i) = accumarray(positionInd(idx),positionInd(idx),[numel(locEdges)-1,1],@numel);
+    %slr(:,i) = accumarray(positionInd(idx),runSpeedAtSpectrPoints(idx),[numel(locEdges)-1,1],@std);
+end
+imagesc(locEdges',lst',mlr'); colorbar;
+axis xy;xlabel('position');ylabel('trial');title('occupancy');
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% pupil area as a function of location and trial
+subplot(324);
+pupArea = [tracked.Area];
+idx = find(frameTimes<=300);
+pupAtSpectrPoints = spline(frameTimes(idx),pupArea(idx),out.t(out.t<=300)); % <300 is task
+
+clear lst mlr slr;
+lst = unique(trialInd);
+for i = 1:length(lst)-1
+    idx = find(trialInd == lst(i));
+    mlr(:,i) = accumarray(positionInd(idx),pupAtSpectrPoints(idx),[numel(locEdges)-1,1],@mean);
+    %slr(:,i) = accumarray(positionInd(idx),pupAtSpectrPoints(idx),[numel(locEdges)-1,1],@std);
+end
+imagesc(locEdges',lst',mlr'); colorbar;
+axis xy;xlabel('position');ylabel('trial');title('pupilArea');
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% pupil center X
+subplot(325);
+pupCentroid = [tracked.Centroid];
+pupCentroidX = pupCentroid(1:2:end); pupCentroidY = pupCentroid(2:2:end);
+pupCentroidX = pupCentroidX - mean(pupCentroidX); 
+pupCentroidY = pupCentroidY - mean(pupCentroidY);
+idx = find(frameTimes<=300);
+pupAtSpectrPoints = spline(frameTimes(idx),pupCentroidX(idx),out.t(out.t<=300)); % <300 is task
+
+clear lst mlr slr;
+lst = unique(trialInd);
+for i = 1:length(lst)-1
+    idx = find(trialInd == lst(i));
+    mlr(:,i) = accumarray(positionInd(idx),pupAtSpectrPoints(idx),[numel(locEdges)-1,1],@mean);
+    %slr(:,i) = accumarray(positionInd(idx),pupAtSpectrPoints(idx),[numel(locEdges)-1,1],@std);
+end
+imagesc(locEdges',lst',mlr'); colorbar;
+axis xy;xlabel('position');ylabel('trial');title('pupilCenterX');
+
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+% pupil center X
+subplot(326);
+pupCentroid = [tracked.Centroid];
+pupCentroidX = pupCentroid(1:2:end); pupCentroidY = pupCentroid(2:2:end); 
+pupCentroidX = pupCentroidX - mean(pupCentroidX); 
+pupCentroidY = pupCentroidY - mean(pupCentroidY);
+idx = find(frameTimes<=300);
+pupAtSpectrPoints = spline(frameTimes(idx),pupCentroidY(idx),out.t(out.t<=300)); % <300 is task
+
+clear lst mlr slr;
+lst = unique(trialInd);
+for i = 1:length(lst)-1
+    idx = find(trialInd == lst(i));
+    mlr(:,i) = accumarray(positionInd(idx),pupAtSpectrPoints(idx),[numel(locEdges)-1,1],@mean);
+    %slr(:,i) = accumarray(positionInd(idx),pupAtSpectrPoints(idx),[numel(locEdges)-1,1],@std);
+end
+imagesc(locEdges',lst',mlr'); colorbar;
+axis xy;xlabel('position');ylabel('trial');title('pupilArea');
+
+
+%% VAR - dont run
+ifdo = 0
+if ifdo
+%% WRAP COLORMAP ON ITSELF
+jet_wrap = vertcat(jet,flipud(jet));
+colormap(jet_wrap);
+
+
+
+%%
+
+
+figure(1)
+subplot(3,1,1); hold on; cla
+plot(encoder)
+axis tight
+
+plot(locs, pks, 'r*')
+
+
+
+deltaTs = diff(locs);
+speed = 2*pi*Radius/600*100 ./ deltaTs ;  % cm/s
+
+
+figure
+subplot(221)
+hist(speed,50)
+end
+##### SOURCE END #####
+--></body></html>

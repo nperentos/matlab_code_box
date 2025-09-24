@@ -1,0 +1,4 @@
+function out = noiseCors(fileBase)
+
+% takes tun structure from a particular session from place_cell_tunings.mat 
+% and computes various quantities relating to 

@@ -1,0 +1,3 @@
+paths that were added by Anton/Zenja for the BrainStateDetection scripts
+addpath(genpath('/storage/share/matlab/Third-Party_Toolboxes/FMAToolbox'));
+addpath(genpath('/storage/share/matlab/labbox/'));
