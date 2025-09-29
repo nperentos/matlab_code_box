@@ -1,3 +1,4 @@
+% 27/09/2025
 % first script for basic data processing of EXELU data post dat and lfp creation
 % KS has already ran at this stage by another script that resides on the recording PC
 % the script is called convertDataEXELU.m
@@ -12,12 +13,13 @@ num_channels = length(chanMap);
 
 
 % theta
+movingwin = [1.5 1.5*0.8];
 params.tapers = [2 3];    % Or [3 5] for slightly smoother spectra
 params.Fs     = 1000;     % Sampling rate (Hz)
 params.fpass  = [0 100];   % Focus on theta band
 params.pad    = 0;        % No additional frequency padding
 % params.win    = [1 0.5];  % 1 s window, 0.5 s step (50% overlap)
-[S,t,f]=mtspecgramc(data',[1.5 1.5*0.8],params);
+[S,t,f]=mtspecgramc(data',movingwin,params);
 figure;
 for i = 1:num_channels
     imagesc(t,f,S(:,:,i)');
@@ -25,9 +27,22 @@ for i = 1:num_channels
     pause(0.2); cla;
 end
 
+% theta
+movingwin = [0.5 0.02];
+params.tapers = [3 5];    % Or [3 5] for slightly smoother spectra
+params.Fs     = 1000;     % Sampling rate (Hz)
+params.fpass  = [1 100];   % Focus on theta band
+params.pad    = 0;        % No additional frequency padding
+% params.win    = [1 0.5];  % 1 s window, 0.5 s step (50% overlap)
+[S,t,f]=mtspecgramc(data',movingwin,params);
+figure;
+for i = 1:num_channels
+    imagesc(t,f,S(:,:,i)');
+    axis xy; title(['ch ',num2str(i)]);
+    pause; cla;
+end
 
-
-% out = specmt(data,{'defaults','theta'});
+out = specmt_low_mem(data(1:2:end,:),{'defaults','gamma'});
 
 test = analogEvents{1};
 test =reshape(test,2,floor(length(test)/2));
