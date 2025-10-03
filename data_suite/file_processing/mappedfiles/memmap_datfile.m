@@ -1,0 +1,9 @@
+function m = memmap_datfile(filebase,filetype)
+if nargin<2; filetype = 'lfp'; end;
+info = get_datfile_info(filebase);
+fn = get_lfp_filename(filebase,filetype);
+filesize = dir(fn);
+filesize = filesize.bytes;
+nchannels = info.nchannels;
+len = filesize/nchannels/2;
+m = memmapfile(fn,'Format',{'int16',[nchannels len],'m'},'writable',false);

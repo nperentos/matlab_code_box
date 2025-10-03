@@ -1,0 +1,13 @@
+% To do:
+% Spike extraction
+% File preparation for spike sorting
+% Events (combine with messages)
+% Add option for more than one probes (mappings etc)
+% Take into account the possibility of recording a subset of channels
+% included in the mappings (e.g. not recording some bad channels)
+% 
+%
+%
+% I am ignoring multiple sessions in the same file (treating them as one).
+% This means I am not checking for multiple TTL's etc. If you want to have
+% multiple sessions, they have to be on their own files

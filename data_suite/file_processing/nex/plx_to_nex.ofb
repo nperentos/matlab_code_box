@@ -1,0 +1,16 @@
+﻿// If you wish to interfere with what is saved
+// Uncomment the respective line
+Set SaveNexCont 1
+Set SaveNexWaveforms 1
+//Set SaveNexUnsorted 1
+Set SaveNexUnitTemplates 1
+
+ForEachFile ExportToNex
+
+// The directory of interest
+// ****************************
+Dir C:\Users\Administrator\Desktop\4Hz Project\Cecilia Data\plx_sorted\*.plx
+//*****************************
+Process
+
+
